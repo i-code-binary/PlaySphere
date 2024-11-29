@@ -1,7 +1,20 @@
+"use client";
+
 import { cn } from "@/utility/cn";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Navbar = ({ className }: { className?: string }) => {
+  const pathname = usePathname(); // Get the current path
+
+  // Define an array of navigation links
+  const navLinks = [
+    { href: "/", label: "Home" },
+    { href: "/sports", label: "Sports" },
+    { href: "/contact", label: "Contact Us" },
+    { href: "/payment", label: "Payment" },
+  ];
+
   return (
     <div
       className={cn(
@@ -10,18 +23,18 @@ const Navbar = ({ className }: { className?: string }) => {
       )}
     >
       <ul className="flex justify-center items-center gap-16 text-white text-xl">
-        <li>
-          <Link href="/">Home</Link>
-        </li>
-        <li>
-          <Link href="/sports">Sports</Link>
-        </li>
-        <li>
-          <Link href="/contact">contact Us</Link>
-        </li>
-        <li>
-          <Link href="/payment">Payment</Link>
-        </li>
+        {navLinks.map((link) => (
+          <li key={link.href}>
+            <Link
+              href={link.href}
+              className={cn(
+                pathname === link.href ? "text-blue-500 font-semibold" : "text-white"
+              )}
+            >
+              {link.label}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );

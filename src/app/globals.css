@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+button {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: transparent; /* Removes default border color */
+}
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
