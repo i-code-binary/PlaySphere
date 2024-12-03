@@ -1,0 +1,148 @@
+{
+  "sports": {
+    "Football": {
+      "name": "Football",
+      "instructors": [
+        {
+          "name": "John Doe",
+          "experience": "5 years of coaching experience, former professional player",
+          "specialization": "Offensive strategy, player development"
+        },
+        {
+          "name": "Jane Smith",
+          "experience": "8 years of coaching, certified fitness trainer",
+          "specialization": "Physical conditioning, defensive coaching"
+        }
+      ],
+      "isFeatured": true,
+      "description": "Our academy offers expert training in football, focusing on skill enhancement, teamwork, and game strategies.",
+      "fee": 500,
+      "achievements": [
+        "World Cup Champions 2018 - France",
+        "Most goals scored in a World Cup - Miroslav Klose",
+        "Highest number of club trophies - Lionel Messi"
+      ],
+      "imageUrl": "https://www.gettyimages.in/detail/photo/soccer-ball-on-field-royalty-free-image/946246286"
+    },
+    "Basketball": {
+      "name": "Basketball",
+      "instructors": [
+        {
+          "name": "Emily Johnson",
+          "experience": "10 years of coaching, former college player",
+          "specialization": "Shooting techniques, team coordination"
+        },
+        {
+          "name": "David Brown",
+          "experience": "7 years of coaching, strength and conditioning expert",
+          "specialization": "Physical endurance, defensive tactics"
+        }
+      ],
+      "isFeatured": true,
+      "description": "Join our basketball program to master shooting, defensive strategies, and teamwork under professional guidance.",
+      "fee": 300,
+      "achievements": [
+        "NBA Championship 2023 - Denver Nuggets",
+        "Most points in a single NBA game - Wilt Chamberlain",
+        "Most successful NBA player - Michael Jordan"
+      ],
+      "imageUrl": "https://cdn.pixabay.com/photo/2021/08/04/16/47/basketball-6529323_960_720.jpg"
+    },
+    "Tennis": {
+      "name": "Tennis",
+      "instructors": [
+        {
+          "name": "Carlos Gomez",
+          "experience": "15 years of coaching, former ATP player",
+          "specialization": "Singles strategy, mental toughness training"
+        },
+        {
+          "name": "Olivia White",
+          "experience": "12 years of coaching, fitness coach",
+          "specialization": "Movement efficiency, serve techniques"
+        }
+      ],
+      "isFeatured": true,
+      "description": "Enhance your tennis skills with our professional coaches, focusing on strategy, agility, and techniques.",
+      "fee": 400,
+      "achievements": [
+        "Wimbledon Winner 2023 - Novak Djokovic",
+        "Grand Slam Titles - Serena Williams",
+        "Longest rally in tennis - 29 minutes"
+      ],
+      "imageUrl": "https://www.gettyimages.in/detail/photo/tennis-player-royalty-free-image/1034853166"
+    },
+    "Cricket": {
+      "name": "Cricket",
+      "instructors": [
+        {
+          "name": "Arvind Patel",
+          "experience": "20 years in coaching, former national team player",
+          "specialization": "Batting techniques, fielding drills"
+        },
+        {
+          "name": "Kavya Rao",
+          "experience": "8 years of coaching, expert in spin bowling",
+          "specialization": "Bowling techniques, tactical bowling"
+        }
+      ],
+      "isFeatured": true,
+      "description": "Our cricket program focuses on advanced techniques in batting, bowling, and fielding to bring out the best in players.",
+      "fee": 350,
+      "achievements": [
+        "ICC Cricket World Cup 2019 - England",
+        "Highest individual score in a World Cup match - Martin Guptill",
+        "Most wickets in ODIs - Muttiah Muralitharan"
+      ],
+      "imageUrl": "https://cdn.pixabay.com/photo/2021/03/27/04/11/cricket-6147289_960_720.jpg"
+    },
+    "Badminton": {
+      "name": "Badminton",
+      "instructors": [
+        {
+          "name": "Akash Mehta",
+          "experience": "10 years of coaching, former national champion",
+          "specialization": "Doubles strategy, speed training"
+        },
+        {
+          "name": "Sneha Roy",
+          "experience": "5 years of coaching, fitness expert",
+          "specialization": "Footwork drills, stamina building"
+        }
+      ],
+      "isFeatured": false,
+      "description": "Learn badminton techniques and skills with our expert coaches at the academy.",
+      "fee": 250,
+      "achievements": [
+        "Olympic Gold Medalist 2021 - Viktor Axelsen",
+        "Most All England Titles - Lin Dan",
+        "Fastest Smash Recorded - 493 km/h by Tan Boon Heong"
+      ],
+      "imageUrl": "https://cdn.pixabay.com/photo/2017/01/18/15/33/badminton-1992924_960_720.jpg"
+    },
+    "Swimming": {
+      "name": "Swimming",
+      "instructors": [
+        {
+          "name": "Michael Lee",
+          "experience": "8 years of coaching, certified lifeguard",
+          "specialization": "Breaststroke technique, endurance training"
+        },
+        {
+          "name": "Anna Fernandes",
+          "experience": "6 years of coaching, national swimmer",
+          "specialization": "Freestyle techniques, underwater dynamics"
+        }
+      ],
+      "isFeatured": false,
+      "description": "Our academy provides swimming training for all skill levels, from beginner to advanced.",
+      "fee": 400,
+      "achievements": [
+        "Olympic Record - Michael Phelps (28 medals)",
+        "World Record Freestyle - Cesar Cielo",
+        "Most Olympic Golds - Michael Phelps"
+      ],
+      "imageUrl": "https://cdn.pixabay.com/photo/2016/11/29/09/08/pool-1867232_960_720.jpg"
+    }
+  }
+}

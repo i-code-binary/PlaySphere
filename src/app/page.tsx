@@ -1,3 +1,4 @@
+import FeaturedSports from "@/components/FeaturedSports";
 import FrontPage from "../components/FrontPage";
 import { Spotlight } from "../components/ui/spotlight";
 
@@ -6,6 +7,7 @@ export default function Home() {
     <div className="w-screen">
       <Spotlight />
       <FrontPage />
+      <FeaturedSports />
     </div>
   );
 }
