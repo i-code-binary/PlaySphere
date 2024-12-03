@@ -1,7 +1,7 @@
 import { div } from "framer-motion/client";
 import sports_data from "../data/sports_data.json";
 import { BackgroundGradientCards } from "./ui/BackgroundGradientCards";
-
+import Link from "next/link";
 export default function FeaturedSports() {
   interface Instructor {
     name: string;
@@ -46,6 +46,14 @@ export default function FeaturedSports() {
             </div>
           ))}
         </div>
+      </div>
+      <div className="text-black text-xl flex justify-center items-center">
+        <Link
+          href={`/sports`}
+          className="bg-white p-2 rounded-md hover:bg-gray-500 hover:text-white"
+        >
+          Explore all Sports
+        </Link>
       </div>
     </div>
   );
