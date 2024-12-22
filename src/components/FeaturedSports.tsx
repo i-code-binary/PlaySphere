@@ -47,7 +47,7 @@ export default function FeaturedSports() {
           ))}
         </div>
       </div>
-      <div className="text-black text-xl flex justify-center items-center">
+      <div className="text-black text-xl flex justify-center items-center mt-5">
         <Link
           href={`/sports`}
           className="bg-white p-2 rounded-md hover:bg-gray-500 hover:text-white"

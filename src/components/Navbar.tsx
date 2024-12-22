@@ -28,7 +28,9 @@ const Navbar = ({ className }: { className?: string }) => {
             <Link
               href={link.href}
               className={cn(
-                pathname === link.href ? "text-blue-500 font-semibold" : "text-white"
+                pathname === link.href
+                  ? "text-blue-500 font-semibold"
+                  : "text-white"
               )}
             >
               {link.label}
