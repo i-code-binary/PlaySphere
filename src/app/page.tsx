@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import Features from "@/components/Features";
 import { Metadata } from "next";
 import OurTestimonials from "../components/OurTestimonials";
+import { BackgroundBoxes } from "@/components/ui/BackgroundeBoxes";
 
 export const metadata: Metadata = {
   title: "Playsphere",

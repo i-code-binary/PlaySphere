@@ -47,8 +47,7 @@ const playsphereContent = [
 export default function Features() {
   return (
     <div
-      className="pt-14 pb-4 flex flex-col gap-5"
-      style={{ background: "rgb(12 8 18)" }}
+      className="pt-14 flex flex-col gap-5 bg-black"
     >
       <h2 className="text-3xl font-bold text-center mb-8 z-10 text-white">
         Our Academy Specialization

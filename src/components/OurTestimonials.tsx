@@ -1,5 +1,6 @@
 import React from "react";
 import { InfiniteMovingCards } from "./ui/InfiniteMovingCards";
+import { BackgroundBoxes } from "./ui/BackgroundeBoxes";
 
 const testimonials = [
   {
@@ -43,9 +44,10 @@ const testimonials = [
 export default function OurTestimonials() {
   return (
     <div
-      style={{ background: "rgb(12 8 18)" }}
-      className="h-[35rem] w-full dark:bg-grid-white/[0.2] relative flex flex-col items-center justify-center overflow-hidden gap-7"
+      // style={{ background: "rgb(12 8 18)" }}
+      className="h-[35rem] bg-black w-full dark:bg-grid-white/[0.2] relative flex flex-col items-center justify-center overflow-hidden gap-7"
     >
+      <BackgroundBoxes/>
       <h2 className="text-3xl font-bold text-center mb-3 z-10 text-white">
         Our Testimonials
       </h2>
