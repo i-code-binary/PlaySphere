@@ -4,13 +4,13 @@ import sportsData from "../data/sports_data.json";
 import { CardContainer, CardBody, CardItem } from "./ui/Card3D";
 import { Button, MovingBorder } from "./ui/MovingBorder";
 import Link from "next/link";
-interface Instructor {
+export interface Instructor {
   name: string;
   experience: string;
   specialization: string;
 }
 
-interface Sport {
+export interface Sport {
   name: string;
   instructors: Instructor[];
   isFeatured: boolean;
@@ -20,7 +20,7 @@ interface Sport {
   imageUrl: string;
 }
 
-interface Data {
+export interface Data {
   sports: { [key: string]: Sport };
 }
 

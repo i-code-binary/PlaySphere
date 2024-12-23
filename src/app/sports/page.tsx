@@ -1,13 +1,12 @@
 import SportsPage from "@/components/SportsPage";
-import { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "All Sports",
-  description: "Explore all the Sports Courses",
-};
-export default function Sports() {
+
+
+export default function SportsHomePage() {
   return (
-    <div>
-      <SportsPage />
-    </div>
+    <>
+      <div>
+        <SportsPage />
+      </div>
+    </>
   );
 }
