@@ -3,16 +3,18 @@
 import { cn } from "@/utility/cn";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+import { useSession } from "next-auth/react";
 const Navbar = ({ className }: { className?: string }) => {
   const pathname = usePathname(); // Get the current path
-
-  // Define an array of navigation links
+  const { data: session } = useSession();
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/sports", label: "Sports" },
     { href: "/contact", label: "Contact Us" },
     { href: "/payment", label: "Payment" },
+    session
+      ? { href: "/profile", label: "Profile" }
+      : { href: "/login", label: "Login" },
   ];
 
   return (
