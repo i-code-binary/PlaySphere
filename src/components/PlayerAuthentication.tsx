@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
