@@ -18,11 +18,15 @@ const RegisterPage = ({ role }: { role: string }) => {
     setErrorMessage(null);
     try {
       const { name, email, password } = formData;
-
+      if (!name || !email || !password) {
+        setErrorMessage("All fields are required.");
+        setTimeout(() => setErrorMessage(null), 2000);
+        return;
+      }
       if (role === "Admin") {
         if (!adminPass) {
           setErrorMessage("Admin Pass is required for Admin registration.");
-          setTimeout(() => setErrorMessage(null), 1000);
+          setTimeout(() => setErrorMessage(null), 2000);
           return;
         }
         const response = await axios.post(`/api/auth/email`, {
@@ -32,8 +36,10 @@ const RegisterPage = ({ role }: { role: string }) => {
           role: "ADMIN",
           adminPass,
         });
-
-        console.log("Admin Registered Successfully:", response.data);
+        if (response.status === 201)
+          setErrorMessage("Admin Registered Successfully. Please Login");
+        else setErrorMessage(response?.data?.message || "Registration Failed");
+        setTimeout(() => setErrorMessage(null), 2000);
       } else {
         const response = await axios.post(`/api/auth/email`, {
           name,
@@ -41,13 +47,15 @@ const RegisterPage = ({ role }: { role: string }) => {
           password,
           role: "USER",
         });
-
-        console.log("User Registered Successfully:", response.data);
+        if (response.status === 201)
+          setErrorMessage("User Registered Successfully. Please Login");
+        else setErrorMessage(response?.data?.message || "Registration Failed");
+        setTimeout(() => setErrorMessage(null), 2000);
       }
     } catch (error: any) {
       const errorMsg = error.response?.data?.message || "Something went wrong.";
       setErrorMessage(errorMsg);
-      setTimeout(() => setErrorMessage(null), 1000);
+      setTimeout(() => setErrorMessage(null), 2000);
     }
   };
 
@@ -58,7 +66,7 @@ const RegisterPage = ({ role }: { role: string }) => {
       </h1>
 
       {errorMessage && (
-        <div className="bg-red-500 text-white text-center p-2 rounded mb-4">
+        <div className="bg-blue-500 text-white text-center p-2 rounded mb-4">
           {errorMessage}
         </div>
       )}
