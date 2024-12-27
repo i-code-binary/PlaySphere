@@ -1,20 +1,56 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "../../models/prismaClient";
-import NextAuth from "next-auth";
+import NextAuth, {
+  DefaultSession,
+  JWT,
+  AuthOptions,
+  Account,
+  Profile,
+  User as NextAuthUser,
+  Session,
+} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 
-type Credentials = {
-  email: string;
-  password: string;
-};
-const authOptions = {
+type Role = "USER" | "ADMIN";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      role: Role;
+    } & DefaultSession["user"];
+  }
+
+  interface User {
+    id: string;
+    role: Role;
+  }
+
+  interface JWT {
+    role?: Role;
+    id?: string;
+  }
+}
+
+export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "jwt" as const,
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          role: "USER" as Role, // Default role for OAuth users
+        };
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -22,62 +58,114 @@ const authOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: Credentials | undefined) {
-        if (!credentials) {
-          throw new Error("Credentials not provided");
-        }
-        const { email, password } = credentials;
-
-        // Validate input
-        if (!email || !password) {
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
           throw new Error("Email and Password are required");
         }
 
-        // Fetch user with related payments
-        const existingUser = await prisma.user.findUnique({
-          where: { email },
-          include: { payments: true }, // Include the payments relation
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            password: true,
+            role: true,
+          },
         });
 
-        if (!existingUser) {
-          throw new Error("User not found");
+        if (!user || !user.password) {
+          throw new Error("Invalid credentials");
         }
 
-        if (!existingUser.password) {
-          throw new Error("Password not found");
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          throw new Error("Invalid credentials");
         }
 
-        // Validate password
-        const isValid = bcrypt.compareSync(password, existingUser.password);
-        if (!isValid) {
-          throw new Error("Invalid Password");
-        }
-
-        // Return user object
         return {
-          id: existingUser.id,
-          name: existingUser.name,
-          email: existingUser.email,
-          role: existingUser.role,
-          payments: existingUser.payments, // Payments are now included
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
         };
       },
     }),
   ],
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      // Allow OAuth users without password
+      if (account?.provider === "google") {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
+
+        if (!existingUser) {
+          // Create new user for first-time OAuth sign in
+          await prisma.user.create({
+            data: {
+              email: user.email!,
+              name: user.name,
+              role: "USER",
+            },
+          });
+        }
+        return true;
+      }
+
+      // For credentials provider, user is already verified in authorize callback
+      return true;
+    },
+    async jwt({ token, user, account, profile }) {
+      if (user) {
+        token.role = user.role;
+        token.id = user.id;
+      }
+
+      // If it's a first time sign in via OAuth
+      if (account?.provider === "google") {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email! },
+          select: { role: true, id: true },
+        });
+
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.id = dbUser.id;
+        }
+      }
+
+      return token;
+    },
+    async session({ session, token }): Promise<Session> {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id as string,
+          role: token.role as Role,
+        },
+      };
+    },
+  },
+  events: {
+    async signIn({ user, account, profile, isNewUser }) {
+      if (account?.provider === "google" && isNewUser) {
+        // Additional actions for new OAuth users if needed
+        console.log("New user signed up via Google:", user.email);
+      }
+    },
+  },
   pages: {
     signIn: "/authentication",
-  },
-  callbacks: {
-    async session({ session, user }: { session: any; user: any }) {
-      session.user.id = user.id;
-      session.user.name = user.name;
-      session.user.email = user.email;
-      session.user.role = user.role;
-      session.user.payments = user.payments;
-      return session;
-    },
+    error: "/authentication/error", // Add an error page to handle OAuth errors
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
+
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
