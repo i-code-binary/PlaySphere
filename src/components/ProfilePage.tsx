@@ -70,6 +70,12 @@ export default function ProfilePage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black text-white">
         Unable to fetch user details.
+        <button
+          onClick={handleLogout}
+          className="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-28"
+        >
+          Logout
+        </button>
       </div>
     );
   }

@@ -1,14 +1,15 @@
-"use client"
+"use client";
 import Link from "next/link";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 import { Advancedbutton } from "./ui/Advancedbutton";
-import { useEffect } from "react";
-import { getSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function PlayerAuthentication() {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     const checkSession = async () => {
       const session = await getSession();
@@ -16,10 +17,20 @@ export default function PlayerAuthentication() {
         router.push("/");
       }
     };
-    checkSession();
+    // checkSession();
   }, []);
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn("google", { callbackUrl: "/" });
+    } catch (error: any) {
+      console.error("Google Sign-In Error:", error);
+      setError(error?.message || "Google sign-in failed");
+      setTimeout(() => setError(null), 2000);
+    }
+  };
   return (
     <div className="flex justify-center items-center flex-col  text-white bg-black min-h-screen pt-40 w-screen">
+      {error && <div className="text-red-600">{error}</div>}
       <div className="flex justify-center items-center w-screen p-4 gap-10 md:gap-0 flex-wrap lg:pt-0">
         <LoginPage role="Player" />
         <RegisterPage role="Player" />
@@ -30,7 +41,9 @@ export default function PlayerAuthentication() {
         </Link>
 
         {/* Google OAuth Button (You can integrate this with NextAuth.js later) */}
-        <Advancedbutton content="Login with google"></Advancedbutton>
+        <span onClick={handleGoogleSignIn}>
+          <Advancedbutton content="Login with google"></Advancedbutton>
+        </span>
       </div>
     </div>
   );

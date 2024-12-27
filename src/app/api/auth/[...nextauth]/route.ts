@@ -98,26 +98,27 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      // Allow OAuth users without password
       if (account?.provider === "google") {
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email! },
+          include: { accounts: true },
         });
 
-        if (!existingUser) {
-          // Create new user for first-time OAuth sign in
-          await prisma.user.create({
+        if (existingUser && !existingUser.accounts.length) {
+          await prisma.account.create({
             data: {
-              email: user.email!,
-              name: user.name,
-              role: "USER",
+              userId: existingUser.id,
+              type: "oauth", // Add this line
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              expires_at: account.expires_at,
             },
           });
         }
         return true;
       }
-
-      // For credentials provider, user is already verified in authorize callback
       return true;
     },
     async jwt({ token, user, account, profile }) {
