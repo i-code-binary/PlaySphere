@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSession, signOut } from "next-auth/react";
+import axios from "axios";
 
 interface Payment {
   id: string;
@@ -22,40 +23,53 @@ export default function ProfilePage() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
-  const session = getSession();
-  // Fetch user data from the backend
-  useEffect(() => {
-    if (!session) {
-      router.push("/authentication");
-    }
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch("/api/user/profile", { method: "GET" });
-        const data = await response.json();
 
-        if (response.ok) {
-          setUserData(data.user);
-        } else {
-          console.error(data.message);
-          if (response.status === 401) {
-            router.push("/authentication"); // Redirect to login if unauthorized
-          }
-        }
+  useEffect(() => {
+    const checkSessionAndFetchData = async () => {
+      const session = await getSession();
+
+      if (!session?.user?.email) {
+        router.push("/authentication");
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+
+      try {
+        const { data } = await axios.get("/api/user/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserData(data.user);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          router.push("/authentication");
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
+    checkSessionAndFetchData();
   }, [router]);
 
-  // Logout handler
   const handleLogout = async () => {
     setLoading(true);
-    await signOut({ callbackUrl: "/authentication" });
-    setLoading(false);
+    try {
+      localStorage.removeItem("token");
+      sessionStorage.clear();
+      await signOut({
+        callbackUrl: "/authentication",
+        redirect: false,
+      });
+      router.push("/authentication");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {

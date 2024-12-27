@@ -104,11 +104,32 @@ export const authOptions: AuthOptions = {
           include: { accounts: true },
         });
 
+        if (!existingUser) {
+          const newUser = await prisma.user.create({
+            data: {
+              email: user.email!,
+              name: user.name,
+              role: "USER",
+              accounts: {
+                create: {
+                  type: "oauth",
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                  access_token: account.access_token,
+                  refresh_token: account.refresh_token,
+                  expires_at: account.expires_at,
+                },
+              },
+            },
+          });
+          return true;
+        }
+
         if (existingUser && !existingUser.accounts.length) {
           await prisma.account.create({
             data: {
               userId: existingUser.id,
-              type: "oauth", // Add this line
+              type: "oauth",
               provider: account.provider,
               providerAccountId: account.providerAccountId,
               access_token: account.access_token,
