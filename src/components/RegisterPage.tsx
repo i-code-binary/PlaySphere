@@ -66,12 +66,12 @@ const RegisterPage = ({ role }: { role: string }) => {
       </h1>
 
       {errorMessage && (
-        <div className="bg-blue-500 text-white text-center p-2 rounded mb-4">
+        <div className="bg-blue-500 text-white text-center p-2 rounded mb-6">
           {errorMessage}
         </div>
       )}
       {role === "Admin" && (
-        <div className="mt-4">
+        <div className="mt-4 mb-2">
           <label
             htmlFor="adminPass"
             className="block text-sm font-medium text-gray-200 mb-2"

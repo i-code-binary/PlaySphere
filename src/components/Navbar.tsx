@@ -14,7 +14,7 @@ const Navbar = ({ className }: { className?: string }) => {
     { href: "/payment", label: "Payment" },
     session
       ? { href: "/profile", label: "Profile" }
-      : { href: "/login", label: "Login" },
+      : { href: "/authentication", label: "Login" },
   ];
 
   return (
