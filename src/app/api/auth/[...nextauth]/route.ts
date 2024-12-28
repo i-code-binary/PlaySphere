@@ -98,49 +98,54 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (account?.provider === "google") {
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-          include: { accounts: true },
-        });
+      try {
+        if (account?.provider === "google") {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+            include: { accounts: true },
+          });
 
-        if (!existingUser) {
-          const newUser = await prisma.user.create({
-            data: {
-              email: user.email!,
-              name: user.name,
-              role: "USER",
-              accounts: {
-                create: {
-                  type: "oauth",
-                  provider: account.provider,
-                  providerAccountId: account.providerAccountId,
-                  access_token: account.access_token,
-                  refresh_token: account.refresh_token,
-                  expires_at: account.expires_at,
+          if (!existingUser) {
+            const newUser = await prisma.user.create({
+              data: {
+                email: user.email!,
+                name: user.name,
+                role: "USER",
+                accounts: {
+                  create: {
+                    type: "oauth",
+                    provider: account.provider,
+                    providerAccountId: account.providerAccountId,
+                    access_token: account.access_token,
+                    refresh_token: account.refresh_token,
+                    expires_at: account.expires_at,
+                  },
                 },
               },
-            },
-          });
+            });
+            return true;
+          }
+
+          if (existingUser && !existingUser.accounts.length) {
+            await prisma.account.create({
+              data: {
+                userId: existingUser.id,
+                type: "oauth",
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+                access_token: account.access_token,
+                refresh_token: account.refresh_token,
+                expires_at: account.expires_at,
+              },
+            });
+          }
           return true;
         }
-
-        if (existingUser && !existingUser.accounts.length) {
-          await prisma.account.create({
-            data: {
-              userId: existingUser.id,
-              type: "oauth",
-              provider: account.provider,
-              providerAccountId: account.providerAccountId,
-              access_token: account.access_token,
-              refresh_token: account.refresh_token,
-              expires_at: account.expires_at,
-            },
-          });
-        }
         return true;
+      } catch (error: any) {
+        console.log("Error at signIn callback", error);
+        return false;
       }
-      return true;
     },
     async jwt({ token, user, account, profile }) {
       if (user) {
