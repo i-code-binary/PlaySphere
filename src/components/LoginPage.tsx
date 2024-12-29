@@ -28,7 +28,7 @@ export default function LoginPage({ role }: { role: string }) {
 
   return (
     <div className="mx-auto p-6 dark:bg-zinc-900 shadow rounded-lg min-w-[250px] max-w-[300px] w-full">
-      <h1 className="text-2xl font-bold text-center mb-6">Login as {role}</h1>
+      <h1 className="text-2xl font-bold text-center mb-6">Login</h1>
       {/* Display error message here (if any) */}
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
       <LoginForm onSubmit={handleLogin} /> {/* Pass form handler */}

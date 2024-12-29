@@ -151,18 +151,20 @@ export const authOptions: AuthOptions = {
       if (user) {
         token.role = user.role;
         token.id = user.id;
+        token.email = user.email;
       }
 
       // If it's a first time sign in via OAuth
       if (account?.provider === "google") {
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email! },
-          select: { role: true, id: true },
+          select: { role: true, id: true, email: true },
         });
 
         if (dbUser) {
           token.role = dbUser.role;
           token.id = dbUser.id;
+          token.email = dbUser.email;
         }
       }
 
@@ -175,6 +177,7 @@ export const authOptions: AuthOptions = {
           ...session.user,
           id: token.id as string,
           role: token.role as Role,
+          email: token.email as string,
         },
       };
     },

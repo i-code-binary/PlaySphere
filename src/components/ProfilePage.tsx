@@ -4,18 +4,22 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSession, signOut } from "next-auth/react";
 import axios from "axios";
-
+import Link from "next/link";
+export enum Role {
+  USER = "USER",
+  ADMIN = "ADMIN"
+}
 interface Payment {
   id: string;
   amount: number;
-  date: string;
+  createdAt: string;
   sports: String;
 }
 
 interface UserData {
   email: string;
   name: string;
-  role: string;
+  role: Role;
   id: string;
   payments: Payment[];
 }
@@ -132,8 +136,10 @@ export default function ProfilePage() {
                   </p>
                   <p>
                     <strong>Date:</strong>{" "}
-                    {payment.date ? (
-                      <span>{new Date(payment.date).toLocaleDateString()}</span>
+                    {payment.createdAt ? (
+                      <span>
+                        {new Date(payment.createdAt).toLocaleDateString()}
+                      </span>
                     ) : (
                       <span>No date available</span>
                     )}
@@ -153,6 +159,28 @@ export default function ProfilePage() {
           Logout
         </button>
       </div>
+      {userData.role === Role.ADMIN && (
+  <Link 
+    href="/all-payment"
+    className="mt-4 backdrop-blur-md bg-white/20 hover:bg-white/30 
+              text-white font-bold py-2 px-6 rounded-lg 
+              transition-all duration-200 flex items-center gap-2"
+  >
+    <svg 
+      className="w-5 h-5" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2"
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+      <line x1="2" y1="10" x2="22" y2="10"/>
+    </svg>
+   Payment Dashboard
+  </Link>
+)}
     </div>
   );
 }
