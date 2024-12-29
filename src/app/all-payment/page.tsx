@@ -1,5 +1,6 @@
 "use client";
 
+import { StarsBackground } from "@/components/ui/StarsBackground";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
@@ -45,11 +46,15 @@ export default function PaymentsPage() {
   }, []);
 
   if (isLoading) {
-    return <div className="p-6">Loading...</div>;
+    return (
+      <div className="w-screen h-screen flex justify-center items-center">
+        Loading...
+      </div>
+    );
   }
 
   return (
-    <div className="p-6">
+    <div className="pt-36 bg-black text-white min-h-screen">
       <h1 className="text-2xl font-bold mb-4">All Payments</h1>
       {error ? (
         <div className="text-red-500 mb-4">{error}</div>
