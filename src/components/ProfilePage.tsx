@@ -9,6 +9,7 @@ interface Payment {
   id: string;
   amount: number;
   date: string;
+  sports: String;
 }
 
 interface UserData {
@@ -121,11 +122,21 @@ export default function ProfilePage() {
                   className="bg-gray-700 text-white p-2 rounded-md"
                 >
                   <p>
+                    <strong>ID:</strong> ${payment.id}
+                  </p>
+                  <p>
                     <strong>Amount:</strong> ${payment.amount}
                   </p>
                   <p>
+                    <strong>sports:</strong> {payment.sports}
+                  </p>
+                  <p>
                     <strong>Date:</strong>{" "}
-                    {new Date(payment.date).toLocaleDateString()}
+                    {payment.date ? (
+                      <span>{new Date(payment.date).toLocaleDateString()}</span>
+                    ) : (
+                      <span>No date available</span>
+                    )}
                   </p>
                 </li>
               ))}
