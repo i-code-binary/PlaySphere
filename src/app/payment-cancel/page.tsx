@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function Page() {
@@ -17,20 +17,28 @@ export default function Page() {
   }, [searchParams]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        backgroundColor: "black",
-        color: "white",
-        fontSize: "1.5rem",
-        textAlign: "center",
-      }}
-      className="text-red-700 w-screen"
+    <Suspense
+      fallback={
+        <div className="flex w-screen h-screen justify-center items-center">
+          Loading...
+        </div>
+      }
     >
-      {message}
-    </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          backgroundColor: "black",
+          color: "white",
+          fontSize: "1.5rem",
+          textAlign: "center",
+        }}
+        className="text-red-700 w-screen"
+      >
+        {message}
+      </div>
+    </Suspense>
   );
 }
