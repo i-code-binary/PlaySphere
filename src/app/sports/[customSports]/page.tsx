@@ -8,6 +8,19 @@ import { useEffect } from "react";
 export default function CustomSports() {
   const params = useParams();
   const { customSports } = params;
+  useEffect(() => {
+    if (customSports) document.title = `${customSports}`;
+    else document.title = "Sports";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute("content", "Sports Desciption");
+    } else {
+      const meta = document.createElement("meta");
+      meta.name = "description";
+      meta.content = "Sports Description";
+      document.head.appendChild(meta);
+    }
+  }, []);
 
   if (!customSports || Array.isArray(customSports)) {
     return (

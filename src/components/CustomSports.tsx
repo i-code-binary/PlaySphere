@@ -110,7 +110,7 @@ export default function CustomSportsPage({ name }: { name: string }) {
           />
           <HoverBorderGradient
             children={
-              <Link href={"/Payment"} className="font-bold px-2 text-lg">
+              <Link href={"/payment"} className="font-bold px-2 text-lg">
                 Pay Now
               </Link>
             }

@@ -1,25 +1,45 @@
-"use client"
+"use client";
 import FeaturedSports from "@/components/FeaturedSports";
 import FrontPage from "../components/FrontPage";
 import { Spotlight } from "../components/ui/spotlight";
 import Footer from "@/components/Footer";
 import Features from "@/components/Features";
-import { Metadata } from "next";
 import OurTestimonials from "../components/OurTestimonials";
-import { BackgroundBoxes } from "@/components/ui/BackgroundeBoxes";
 import ChatBot from "@/components/Chat";
-
+import Head from "next/head";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    // Update title
+    document.title = "PlaySphere";
+
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute("content", "Play Sphere home page");
+    } else {
+      const meta = document.createElement("meta");
+      meta.name = "description";
+      meta.content = "Play Sphere home page";
+      document.head.appendChild(meta);
+    }
+  }, []);
   return (
+    // <html lang="en">
     <div className="w-screen">
+      <Head>
+        <title>PlaySphere</title>
+        <meta name="description" content="Play Sphere home page" />
+      </Head>
       <Spotlight />
       <FrontPage />
       <FeaturedSports />
       <Features />
       <OurTestimonials />
-      <ChatBot/>
+      <ChatBot />
       <Footer />
     </div>
+    // </html>
   );
 }

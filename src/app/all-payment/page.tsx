@@ -63,7 +63,7 @@ export default function PaymentsPage() {
       ) : (
         <table className="table-auto w-full border-collapse border border-gray-300">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="bg-gray-100 text-black">
               <th className="border border-gray-300 px-4 py-2">ID</th>
               <th className="border border-gray-300 px-4 py-2">User</th>
               <th className="border border-gray-300 px-4 py-2">Amount</th>
