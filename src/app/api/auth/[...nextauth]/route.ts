@@ -140,7 +140,7 @@ export const authOptions: AuthOptions = {
         return false;
       }
     },
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user, account,/*profile */ }) {
       if (user) {
         token.role = user.role;
         token.id = user.id;
@@ -176,7 +176,7 @@ export const authOptions: AuthOptions = {
     },
   },
   events: {
-    async signIn({ user, account, profile, isNewUser }) {
+    async signIn({ user, account, /*profile*/ isNewUser }) {
       if (account?.provider === "google" && isNewUser) {
         // Additional actions for new OAuth users if needed
         console.log("New user signed up via Google:", user.email);
