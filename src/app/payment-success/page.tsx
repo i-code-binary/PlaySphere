@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSearchParams, useRouter } from "next/navigation";
 
 export default function Page() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("Loading...");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [message, setMessage] = useState<string>("Loading...");
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -21,35 +21,28 @@ export default function Page() {
 
     const verifyPayment = async () => {
       try {
-        const response = await axios.get(`/api/verify-payment`, {
+        const response = await axios.get<{ message: string }>(`/api/verify-payment`, {
           params: { token },
         });
 
         if (response.status === 201) {
           setMessage(response.data.message || "Payment verified successfully!");
         } else {
-          setMessage(response.data.message || "Payment verification failed.");
           router.push(
-            `/payment-cancel?error=${response.data.message} || "Payment Verification Failed.Contact official Team`
+            `/payment-cancel?error=${
+              response.data.message || "Payment verification failed."
+            }`
           );
         }
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
-          if (error.response) {
-            router.push(
-              `/payment-cancel?error=${
-                error.response.data?.error ||
-                "Payment Verification Failed. Contact official Team"
-              }`
-            );
-          } else {
-            router.push(
-              `/payment-cancel?error="Error: Unable to reach payment verification service."`
-            );
-          }
+          const errorMessage =
+            error.response?.data?.error ||
+            "Payment verification failed. Contact the official team.";
+          router.push(`/payment-cancel?error=${errorMessage}`);
         } else {
           router.push(
-            `/payment-cancel?error="Unexpected error occurred. Please try again later."`
+            `/payment-cancel?error=Unexpected error occurred. Please try again later.`
           );
         }
       } finally {
@@ -72,7 +65,7 @@ export default function Page() {
         fontSize: "1.5rem",
         textAlign: "center",
       }}
-      className={`${loading ? "text-white" : "text-green-500"}`}
+      className={loading ? "text-white" : "text-green-500"}
     >
       {loading ? "Loading..." : message}
     </div>

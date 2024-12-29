@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export default function PaymentCancelContent() {
+const PaymentCancelPage: React.FC = () => {
   const searchParams = useSearchParams();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<string>("Loading...");
 
   useEffect(() => {
     const error = searchParams.get("error");
@@ -33,4 +33,6 @@ export default function PaymentCancelContent() {
       {message}
     </div>
   );
-}
+};
+
+export default PaymentCancelPage;
