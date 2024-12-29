@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../models/prismaClient";
 import bcrypt from "bcryptjs";
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   if (req.method !== "POST") {
     return NextResponse.json(
       { status: 405, message: "Method Not Allowed" },
@@ -78,8 +78,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
         { status: 201 }
       );
     }
-  } catch (error: any) {
-    console.error("Error during registration:", error.message);
+  } catch (error) {
+    console.error("Error during registration:", error);
     return NextResponse.json(
       { status: 500, message: "Internal Server Error" },
       { status: 500 }

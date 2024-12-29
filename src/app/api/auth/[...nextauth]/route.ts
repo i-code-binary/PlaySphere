@@ -1,14 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "../../models/prismaClient";
-import NextAuth, {
-  DefaultSession,
-  JWT,
-  AuthOptions,
-  Account,
-  Profile,
-  User as NextAuthUser,
-  Session,
-} from "next-auth";
+import NextAuth, { DefaultSession, AuthOptions, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
@@ -97,7 +89,7 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       try {
         if (account?.provider === "google") {
           const existingUser = await prisma.user.findUnique({
@@ -123,6 +115,7 @@ export const authOptions: AuthOptions = {
                 },
               },
             });
+            if (!newUser) return false;
             return true;
           }
 
@@ -142,7 +135,7 @@ export const authOptions: AuthOptions = {
           return true;
         }
         return true;
-      } catch (error: any) {
+      } catch (error) {
         console.log("Error at signIn callback", error);
         return false;
       }

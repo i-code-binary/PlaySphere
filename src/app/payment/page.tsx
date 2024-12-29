@@ -12,7 +12,7 @@ export default function Page() {
       if (!session) router.push("/authentication");
     }
     checkUserLogin();
-  }, []);
+  }, [router]);
   return (
     <div>
       <PaymentPage />

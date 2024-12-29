@@ -15,18 +15,36 @@ Instructions:
 User: {input}
 Assistant:`;
 
-type OperationFunction = () => Promise<any>;
+// Define custom error types
+interface ApiError extends Error {
+  response?: {
+    data: unknown;
+  };
+}
 
-async function retryOperation(operation: OperationFunction, maxRetries = 3, delay = 1000): Promise<any> {
+// Define response type for the Hugging Face API
+interface HuggingFaceResponse {
+  generated_text: string;
+}
+
+type OperationFunction = () => Promise<HuggingFaceResponse>;
+
+async function retryOperation(
+  operation: OperationFunction,
+  maxRetries = 3,
+  delay = 1000
+): Promise<HuggingFaceResponse> {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await operation();
-    } catch (error: any) {
-      console.log(`Attempt ${i + 1} failed:`, error.message);
+    } catch (error) {
+      const apiError = error as ApiError;
+      console.log(`Attempt ${i + 1} failed:`, apiError.message);
       if (i === maxRetries - 1) throw error;
       await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
     }
   }
+  throw new Error('Operation failed after all retries');
 }
 
 export async function POST(req: NextRequest) {
@@ -86,15 +104,16 @@ export async function POST(req: NextRequest) {
         message: cleanedText
       });
 
-    } catch (hfError: any) {
+    } catch (error) {
+      const apiError = error as ApiError;
       console.error('Hugging Face API error:', {
-        error: hfError,
-        message: hfError.message,
-        details: hfError.response?.data
+        error: apiError,
+        message: apiError.message,
+        details: apiError.response?.data
       });
 
-      if (hfError.message.includes('Service Unavailable') || 
-          hfError.message.includes('Generated response is not coherent')) {
+      if (apiError.message.includes('Service Unavailable') || 
+          apiError.message.includes('Generated response is not coherent')) {
         try {
           const fallbackResponse = await hf.textGeneration({
             model: 'facebook/opt-125m',
@@ -113,38 +132,40 @@ export async function POST(req: NextRequest) {
               note: 'Using fallback model due to service issues'
             });
           }
-        } catch (fallbackError: any) {
-          console.error('Fallback model also failed:', fallbackError);
+        } catch (fallbackError) {
+          const typedFallbackError = fallbackError as ApiError;
+          console.error('Fallback model also failed:', typedFallbackError);
         }
       }
 
       let errorMessage = 'Hugging Face API error';
-      if (hfError.message.includes('time out')) {
+      if (apiError.message.includes('time out')) {
         errorMessage = 'The request timed out. Please try again.';
-      } else if (hfError.message.includes('Service Unavailable')) {
+      } else if (apiError.message.includes('Service Unavailable')) {
         errorMessage = 'The service is temporarily unavailable. Please try again in a few moments.';
       }
 
       return NextResponse.json(
         { 
           error: errorMessage,
-          details: hfError.message
+          details: apiError.message
         },
         { status: 503 }
       );
     }
 
-  } catch (error: any) {
+  } catch (error) {
+    const serverError = error as Error;
     console.error('General error in chat endpoint:', {
-      error,
-      message: error.message,
-      stack: error.stack
+      error: serverError,
+      message: serverError.message,
+      stack: serverError.stack
     });
 
     return NextResponse.json(
       { 
         error: 'Failed to process chat message',
-        details: error.message
+        details: serverError.message
       },
       { status: 500 }
     );

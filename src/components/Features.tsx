@@ -2,7 +2,6 @@ import { StickyScroll } from "./ui/stickyScrollReveal";
 import feature1 from "../assets/feature1.webp";
 import feature2 from "../assets/feature2.webp";
 import feature3 from "../assets/feature3.webp";
-import feature4 from "../assets/feature4.webp";
 import feature5 from "../assets/feature5.webp";
 import feature6 from "../assets/feature6.webp";
 const playsphereContent = [
@@ -10,7 +9,7 @@ const playsphereContent = [
     title: "Unlock Your Athletic Potential",
     description:
       "Embark on a personalized training journey with PlaySphere. Our expert coaches tailor programs to your unique strengths and goals, ensuring you achieve peak performance in your chosen sport.",
-    content: <img src={feature1.src} alt="Feature 1" />,
+    content: <img src={feature1.src} alt="Feature 1"/>,
   },
   {
     title: "Expert Coaching Across Multiple Sports",
@@ -46,9 +45,7 @@ const playsphereContent = [
 
 export default function Features() {
   return (
-    <div
-      className="pt-14 flex flex-col gap-5 bg-black"
-    >
+    <div className="pt-14 flex flex-col gap-5 bg-black">
       <h2 className="text-3xl font-bold text-center mb-8 z-10 text-white">
         Our Academy Specialization
       </h2>

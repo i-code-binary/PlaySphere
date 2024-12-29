@@ -46,11 +46,12 @@ export async function GET(req: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error) {
+    console.log(error);
     return NextResponse.json(
       {
         status: 500,
-        message: error.message || "Something went wrong",
+        message: "Internal Server error",
       },
       { status: 500 }
     );

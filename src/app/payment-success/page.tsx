@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSearchParams, useRouter } from "next/navigation";
 
 export default function Page() {
@@ -33,15 +33,23 @@ export default function Page() {
             `/payment-cancel?error=${response.data.message} || "Payment Verification Failed.Contact official Team`
           );
         }
-      } catch (error: any) {
-        if (error.response) {
-          // If server responded with an error status
-          router.push(
-            `/payment-cancel?error=${error.response.data?.error} || "Payment Verification Failed.Contact official Team`
-          );
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            router.push(
+              `/payment-cancel?error=${
+                error.response.data?.error ||
+                "Payment Verification Failed. Contact official Team"
+              }`
+            );
+          } else {
+            router.push(
+              `/payment-cancel?error="Error: Unable to reach payment verification service."`
+            );
+          }
         } else {
           router.push(
-            `/payment-cancel?error="Error: Unable to reach payment verification service."`
+            `/payment-cancel?error="Unexpected error occurred. Please try again later."`
           );
         }
       } finally {

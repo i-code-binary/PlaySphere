@@ -14,13 +14,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 2. Get authentication info
-    const userEmail = req.cookies.get("userEmail")?.value;
-    const authToken = await getToken({
-      req,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
     // 4. Get PayPal order details first
     const orderData = await getPayPalOrderDetails(paypalToken);
     if (!orderData) {
@@ -54,12 +47,23 @@ export async function GET(req: NextRequest) {
         paymentMethod: "PayPal",
       },
     });
-
+    if (!payment) {
+      return NextResponse.json(
+        {
+          status: 500,
+          message: "Failed to create Payment. Please contact Official",
+        },
+        { status: 500 }
+      );
+    }
     // 4. Clear cookies and redirect to success or failure page
-    const response = NextResponse.json({
-      status: 201,
-      message: `Payment successful for ${existingOrder.sports} for ${existingOrder.month}`,
-    },{status:201});
+    const response = NextResponse.json(
+      {
+        status: 201,
+        message: `Payment successful for ${existingOrder.sports} for ${existingOrder.month}`,
+      },
+      { status: 201 }
+    );
     response.cookies.delete("userEmail");
 
     return response;

@@ -13,7 +13,7 @@ interface Payment {
   id: string;
   amount: number;
   createdAt: string;
-  sports: String;
+  sports: string;
 }
 
 interface UserData {

@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { getSession, signIn } from "next-auth/react";
+import React, {  useState } from "react";
+import {  signIn } from "next-auth/react";
 import LoginForm from "./LoginForm"; // Adjust the import path as needed
 import { useRouter } from "next/navigation";
 
-export default function LoginPage({ role }: { role: string }) {
+export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 

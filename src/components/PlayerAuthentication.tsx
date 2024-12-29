@@ -17,22 +17,28 @@ export default function PlayerAuthentication() {
         router.push("/");
       }
     };
-    // checkSession();
-  }, []);
+    checkSession();
+  }, [router]);
   const handleGoogleSignIn = async () => {
     try {
       await signIn("google", { callbackUrl: "/" });
-    } catch (error: any) {
-      console.error("Google Sign-In Error:", error);
-      setError(error?.message || "Google sign-in failed");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Google Sign-In Error:", error);
+        setError(error.message || "Google sign-in failed");
+      } else {
+        console.error("Unknown error:", error);
+        setError("Google sign-in failed");
+      }
       setTimeout(() => setError(null), 2000);
     }
+    
   };
   return (
     <div className="flex justify-center items-center flex-col  text-white bg-black min-h-screen pt-40 w-screen">
       {error && <div className="text-red-600">{error}</div>}
       <div className="flex justify-center items-center w-screen p-4 gap-10 md:gap-0 flex-wrap lg:pt-0">
-        <LoginPage role="Player" />
+        <LoginPage />
         <RegisterPage role="Player" />
       </div>
       <div className="flex flex-col items-center gap-4 mt-8">

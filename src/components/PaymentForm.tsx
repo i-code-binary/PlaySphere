@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Input } from "./ui/Input";
 import { Label } from "./ui/Label";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import sportsdata from "../data/sports_data.json";
 
@@ -68,7 +67,7 @@ const PaymentForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
-  const router = useRouter();
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

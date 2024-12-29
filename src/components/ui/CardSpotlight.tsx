@@ -22,13 +22,13 @@ export const CardSpotlight = ({
     clientX,
     clientY,
   }: ReactMouseEvent<HTMLDivElement>) {
-    let { left, top } = currentTarget.getBoundingClientRect();
+    const { left, top } = currentTarget.getBoundingClientRect();
 
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
   }
 
-  const [isHovering, setIsHovering] = useState(false);
+  const [, setIsHovering] = useState(false);
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
   return (

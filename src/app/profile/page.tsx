@@ -1,9 +1,13 @@
 import ProfilePage from "@/components/ProfilePage";
 
-export default function () {
+const ProfilePageWrapper = () => {
   return (
     <div>
       <ProfilePage />
     </div>
   );
-}
+};
+
+ProfilePageWrapper.displayName = "ProfilePageWrapper";
+
+export default ProfilePageWrapper;

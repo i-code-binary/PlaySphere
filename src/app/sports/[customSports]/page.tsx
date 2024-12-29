@@ -2,7 +2,6 @@
 
 import { useParams } from "next/navigation";
 import CustomSportsPage from "@/components/CustomSports";
-import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 export default function CustomSports() {
@@ -20,7 +19,7 @@ export default function CustomSports() {
       meta.content = "Sports Description";
       document.head.appendChild(meta);
     }
-  }, []);
+  }, [customSports]);
 
   if (!customSports || Array.isArray(customSports)) {
     return (

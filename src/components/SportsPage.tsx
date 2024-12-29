@@ -2,7 +2,7 @@
 import React from "react";
 import sportsData from "../data/sports_data.json";
 import { CardContainer, CardBody, CardItem } from "./ui/Card3D";
-import { Button, MovingBorder } from "./ui/MovingBorder";
+import { Button } from "./ui/MovingBorder";
 import Link from "next/link";
 export interface Instructor {
   name: string;
@@ -65,7 +65,6 @@ export default function SportsPage() {
                 <Link href={`/sports/${sport.name}`}>
                   <Button
                     containerClassName="hover:shadow-lg mx-auto"
-                    borderClassName="bg-blue-500"
                     duration={3000}
                     className="font-semibold"
                   >

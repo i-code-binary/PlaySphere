@@ -1,7 +1,6 @@
 "use client";
 
-import { StarsBackground } from "@/components/ui/StarsBackground";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useState, useEffect } from "react";
 
 interface Payment {
@@ -31,12 +30,17 @@ export default function PaymentsPage() {
         setIsLoading(true);
         const response = await axios.get("/api/get-payment");
         setPayments(response.data.payments); // Note: lowercase 'payments'
-      } catch (err: any) {
-        setError(
-          err.response?.data?.message ||
-            err.message ||
-            "Failed to fetch payments."
-        );
+      } catch (err: unknown) {
+        if (err instanceof AxiosError)
+          setError(err.response?.data?.message || "Failed to fetch payments.");
+        else if (err instanceof Error) {
+          setError(err.message || "Failed to fetch payments.");
+        } else {
+          setError("An unknown error occurred.");
+        }
+        setTimeout(() => {
+          setError(null);
+        }, 2000);
       } finally {
         setIsLoading(false);
       }

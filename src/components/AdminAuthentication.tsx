@@ -1,5 +1,4 @@
 import Link from "next/link";
-import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 import { Advancedbutton } from "./ui/Advancedbutton";
 import { useRouter } from "next/navigation";
@@ -16,7 +15,7 @@ export default function AdminAuthentication() {
       }
     };
     checkSession();
-  }, []);
+  }, [router]);
   return (
     <div className="flex justify-center items-center flex-col  text-white bg-black min-h-screen pt-40 w-screen">
       <div className="flex justify-center items-center w-screen p-4 gap-10 md:gap-0 flex-wrap lg:pt-0">

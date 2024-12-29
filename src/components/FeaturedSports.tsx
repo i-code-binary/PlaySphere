@@ -1,4 +1,3 @@
-import { div } from "framer-motion/client";
 import sports_data from "../data/sports_data.json";
 import { BackgroundGradientCards } from "./ui/BackgroundGradientCards";
 import Link from "next/link";

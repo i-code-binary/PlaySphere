@@ -8,6 +8,7 @@ import { HoverBorderGradient } from "./ui/HoverBorderGradient";
 import Link from "next/link";
 import Footer from "./Footer";
 
+
 export default function CustomSportsPage({ name }: { name: string }) {
   const obj = (sportsData as Data).sports;
   const sportsDetails: Sport = obj[name];
@@ -42,8 +43,10 @@ export default function CustomSportsPage({ name }: { name: string }) {
           {sportsDetails.name}
         </h2>
         <img
-          src={`${sportsDetails.imageUrl}`}
-          alt=""
+          src={sportsDetails.imageUrl}
+          alt="Sport Image"
+          width={1200} // You can specify width and height for optimization
+          height={800}
           className="mx-auto w-screen 2xl:w-1/2 mb-10"
         />
         <div className="flex flex-col gap-10 mb-8">
@@ -66,7 +69,7 @@ export default function CustomSportsPage({ name }: { name: string }) {
           </p>
         </div>
         <div className="w-full">
-          <CardSpotlight children={achievement} />
+          <CardSpotlight>{achievement}</CardSpotlight>
         </div>
         <div className="bg-gray-900 w-full py-8">
           <h4 className="font-semibold text-2xl text-center mb-10">
@@ -74,47 +77,43 @@ export default function CustomSportsPage({ name }: { name: string }) {
           </h4>
           <div className="flex gap-8 flex-wrap justify-center items-center">
             {sportsDetails.instructors.map((instructor, index) => (
-              <CardSpotlight
-                key={index}
-                children={
-                  <div className="max-w-md mx-auto p-4 bg-gray-900 rounded-lg shadow-lg">
-                    <p className="text-xl font-semibold text-gray-700">
-                      Name:{" "}
-                      <span className="text-blue-500">{instructor.name}</span>
-                    </p>
-                    <p className="text-lg text-gray-600 mt-2">
-                      Experience:{" "}
-                      <span className="text-blue-500">
-                        {instructor.experience}
-                      </span>
-                    </p>
-                    <p className="text-lg text-gray-600 mt-2">
-                      Specialization:{" "}
-                      <span className="text-blue-500">
-                        {instructor.specialization}
-                      </span>
-                    </p>
-                  </div>
-                }
-              />
+              <CardSpotlight key={index}>
+                {" "}
+                <div className="max-w-md mx-auto p-4 bg-gray-900 rounded-lg shadow-lg">
+                  <p className="text-xl font-semibold text-gray-700">
+                    Name:{" "}
+                    <span className="text-blue-500">{instructor.name}</span>
+                  </p>
+                  <p className="text-lg text-gray-600 mt-2">
+                    Experience:{" "}
+                    <span className="text-blue-500">
+                      {instructor.experience}
+                    </span>
+                  </p>
+                  <p className="text-lg text-gray-600 mt-2">
+                    Specialization:{" "}
+                    <span className="text-blue-500">
+                      {instructor.specialization}
+                    </span>
+                  </p>
+                </div>
+              </CardSpotlight>
             ))}
           </div>
         </div>
         <div className="flex flex-wrap justify-between bg-gray-600 w-full rounded-lg py-2 items-center px-8">
-          <HoverBorderGradient
-            children={
-              <div className="font-bold px-2 text-lg">
-                Fee: {sportsDetails.fee}
-              </div>
-            }
-          />
-          <HoverBorderGradient
-            children={
-              <Link href={"/payment"} className="font-bold px-2 text-lg">
-                Pay Now
-              </Link>
-            }
-          />
+          <HoverBorderGradient>
+            {" "}
+            <div className="font-bold px-2 text-lg">
+              Fee: {sportsDetails.fee}
+            </div>
+          </HoverBorderGradient>
+          <HoverBorderGradient>
+            {" "}
+            <Link href={"/payment"} className="font-bold px-2 text-lg">
+              Pay Now
+            </Link>
+          </HoverBorderGradient>
         </div>
       </div>
       <Footer />

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import RegisterForm from "./RegisterForm"; // Assuming the path is correct
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const RegisterPage = ({ role }: { role: string }) => {
   const [adminPass, setAdminPass] = useState(""); // State for adminPass
@@ -52,9 +52,15 @@ const RegisterPage = ({ role }: { role: string }) => {
         else setErrorMessage(response?.data?.message || "Registration Failed");
         setTimeout(() => setErrorMessage(null), 2000);
       }
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.message || "Something went wrong.";
-      setErrorMessage(errorMsg);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        const errorMsg = error.response?.data?.message || "Something went wrong.";
+        setErrorMessage(errorMsg);
+      } else {
+        console.error("An unknown error occurred:", error);
+        setErrorMessage("Something went wrong.");
+      }
+    
       setTimeout(() => setErrorMessage(null), 2000);
     }
   };

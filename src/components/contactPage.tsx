@@ -2,7 +2,6 @@
 import { StarsBackground } from "@/components/ui/StarsBackground";
 import axios from "axios";
 import { useState } from "react";
-import { json } from "stream/consumers";
 
 interface FormData {
   name: string;
@@ -48,8 +47,14 @@ export default function ContactPage() {
       }
       setSuccess(true);
       setFormData({ name: "", email: "", query: "" }); // Reset the form
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "An unexpected error occurred.");
+      } else {
+        console.error("An unknown error occurred:", err);
+        setError("An unexpected error occurred.");
+      }
+
       setTimeout(() => {
         setError(null);
       }, 2000);
@@ -80,7 +85,7 @@ export default function ContactPage() {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
             required
           />
         </div>
@@ -94,7 +99,7 @@ export default function ContactPage() {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
             required
           />
         </div>
