@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useSearchParams, useRouter } from "next/navigation";
 
 export default function Page() {
