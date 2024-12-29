@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["mongodb"]
 }
 
@@ -28,20 +28,27 @@ enum Sports {
   SWIMMING
 }
 
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
 model Account {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId           String  
-  type             String 
-  provider         String   
-  providerAccountId String  
-  refresh_token    String?  
-  access_token     String?  
-  expires_at       Int?   
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
   token_type        String?
   scope             String?
   id_token          String?
-  session_state     String?  
-  user             User     @relation(fields: [userId], references: [id])
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId])
 }
@@ -49,33 +56,48 @@ model Account {
 model User {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String   @unique
-  emailVerified  DateTime?
-  password      String?   // For email/password auth
+  email         String    @unique
+  emailVerified DateTime?
+  password      String? // For email/password auth
   role          Role      @default(USER)
   createdAt     DateTime  @default(now())
 
-  payments      Payment[]
-  accounts      Account[]
+  payments   Payment[]
+  accounts   Account[]
+  paymentIds PaymentId[]
+}
+
+model PaymentId {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String
+  month     String
+  sports    Sports
+  email     String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([expiresAt]) // Index for efficient cleanup queries
 }
 
 model Payment {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId          String   @db.ObjectId
-  user            User     @relation(fields: [userId], references: [id])
-  amount          Float    // Payment amount
-  currency        String   // Currency used (e.g., "INR")
-  sports          Sports   // Enum for sport-related payments
-  month           String   // For storing the payment month
-  transactionId   String   @unique // Razorpay's unique payment ID
-  orderId         String   @unique // Razorpay's unique order ID
-  status          String   // Payment status (e.g., "captured", "failed")
-  paymentMethod   String   // Method of payment (e.g., "card", "netbanking")
-  cardDetails     String?  // Card info (e.g., "Visa ending with 1234"), nullable
-  bank            String?  // Bank name if payment is via net banking, nullable
-  createdAt       DateTime @default(now()) // Transaction timestamp
-}
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String        @db.ObjectId
+  amount        Float
+  currency      String
+  sports        Sports
+  month         String
+  paypalOrderId String
+  paypalPayerId String?
+  status        PaymentStatus @default(PENDING)
+  paymentMethod String        @default("PayPal")
+  createdAt     DateTime      @default(now())
 
+  @@index([userId])
+  @@index([status])
+}
 
 model Query {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId

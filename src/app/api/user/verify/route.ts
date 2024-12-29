@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET_ID}`
     ).toString("base64");
     const response = await axios.post(
-      "https://api.sandbox.paypal.com/v2/checkout/orders",
+      process.env.PAYPAL_REQUEST_URL!,
       orderData,
       {
         headers: {
@@ -74,12 +74,33 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-    return NextResponse.json({
+    const paymentid = await prisma.paymentId.create({
+      data: {
+        orderId: order.id,
+        month: month,
+        sports: sports,
+        email: user.email,
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 1000 * 60 * 20),
+      },
+    });
+    if (!paymentid)
+      return NextResponse.redirect(
+        "/payment-cancel?error=`Failed_to_save_Order`"
+      );
+    const res = NextResponse.json({
       status: 200,
       message: "User verified and PayPal order created successfully",
       orderDetails: order,
       user,
     });
+    res.cookies.set("userEmail", user.email, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 3600,
+    });
+    return res;
   } catch (error) {
     console.error("Error during request processing:", error);
     return NextResponse.json(
