@@ -1,21 +1,7 @@
-"use client";
-
-import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import PaymentCancelContent from "@/components/PaymentCancelContent";
+import { Suspense } from "react";
 
 export default function Page() {
-  const searchParams = useSearchParams();
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    const error = searchParams.get("error");
-    if (error) {
-      setMessage(error);
-    } else {
-      setMessage("Payment failed.");
-    }
-  }, [searchParams]);
-
   return (
     <Suspense
       fallback={
@@ -24,21 +10,7 @@ export default function Page() {
         </div>
       }
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          backgroundColor: "black",
-          color: "white",
-          fontSize: "1.5rem",
-          textAlign: "center",
-        }}
-        className="text-red-700 w-screen"
-      >
-        {message}
-      </div>
+      <PaymentCancelContent />
     </Suspense>
   );
 }
