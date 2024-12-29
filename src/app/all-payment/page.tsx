@@ -55,7 +55,7 @@ export default function PaymentsPage() {
 
   return (
     <div className="pt-36 bg-black text-white min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">All Payments</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">All Payments</h1>
       {error ? (
         <div className="text-red-500 mb-4">{error}</div>
       ) : payments.length === 0 ? (

@@ -67,6 +67,7 @@ const PaymentForm: React.FC = () => {
   });
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const handleChange = (
@@ -100,6 +101,7 @@ const PaymentForm: React.FC = () => {
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
+    setLoading(true);
     setError(null);
     setStatus(null);
 
@@ -144,6 +146,8 @@ const PaymentForm: React.FC = () => {
         setError("An unexpected error occurred");
       }
       setTimeout(() => setError(null), 3000);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -167,6 +171,7 @@ const PaymentForm: React.FC = () => {
           value={formData.sports}
           onChange={handleChange}
           required
+          disabled={isLoading}
           className="w-full bg-gray-50 dark:bg-zinc-800 text-black dark:text-white rounded-md px-3 py-2 text-sm"
         >
           <option value="" disabled>
@@ -188,6 +193,7 @@ const PaymentForm: React.FC = () => {
           value={formData.month}
           onChange={handleChange}
           required
+          disabled={isLoading}
           className="w-full bg-gray-50 dark:bg-zinc-800 text-black dark:text-white rounded-md px-3 py-2 text-sm"
         >
           <option value="" disabled>
@@ -223,6 +229,7 @@ const PaymentForm: React.FC = () => {
           value={formData.currency}
           onChange={handleChange}
           className="w-full bg-gray-50 dark:bg-zinc-800 text-black dark:text-white rounded-md px-3 py-2 text-sm"
+          disabled={isLoading}
         >
           {currencies.map((currency) => (
             <option key={currency} value={currency}>
@@ -235,8 +242,9 @@ const PaymentForm: React.FC = () => {
       <button
         type="submit"
         className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+        disabled={isLoading}
       >
-        Proceed to Pay
+        {isLoading ? "Processing" : "Proceed to Pay"}
       </button>
     </form>
   );

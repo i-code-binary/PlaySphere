@@ -1,3 +1,4 @@
+"use client"
 import FeaturedSports from "@/components/FeaturedSports";
 import FrontPage from "../components/FrontPage";
 import { Spotlight } from "../components/ui/spotlight";
@@ -6,11 +7,9 @@ import Features from "@/components/Features";
 import { Metadata } from "next";
 import OurTestimonials from "../components/OurTestimonials";
 import { BackgroundBoxes } from "@/components/ui/BackgroundeBoxes";
+import ChatBot from "@/components/Chat";
 
-export const metadata: Metadata = {
-  title: "Playsphere",
-  description: "Where sports meet perfection",
-};
+
 export default function Home() {
   return (
     <div className="w-screen">
@@ -19,6 +18,7 @@ export default function Home() {
       <FeaturedSports />
       <Features />
       <OurTestimonials />
+      <ChatBot/>
       <Footer />
     </div>
   );
