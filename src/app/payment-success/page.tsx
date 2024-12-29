@@ -29,18 +29,20 @@ export default function Page() {
           setMessage(response.data.message || "Payment verified successfully!");
         } else {
           setMessage(response.data.message || "Payment verification failed.");
+          router.push(
+            `/payment-cancel?error=${response.data.message} || "Payment Verification Failed.Contact official Team`
+          );
         }
       } catch (error: any) {
         if (error.response) {
           // If server responded with an error status
-          setMessage(
-            `Error: ${
-              error.response.data?.error || "Payment verification failed"
-            }`
+          router.push(
+            `/payment-cancel?error=${error.response.data?.error} || "Payment Verification Failed.Contact official Team`
           );
         } else {
-          // If request fails or network error occurs
-          setMessage("Error: Unable to reach payment verification service.");
+          router.push(
+            `/payment-cancel?error="Error: Unable to reach payment verification service."`
+          );
         }
       } finally {
         setLoading(false);
@@ -62,6 +64,7 @@ export default function Page() {
         fontSize: "1.5rem",
         textAlign: "center",
       }}
+      className={`${loading ? "text-white" : "text-green-500"}`}
     >
       {loading ? "Loading..." : message}
     </div>

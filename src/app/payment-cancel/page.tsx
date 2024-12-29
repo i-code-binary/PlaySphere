@@ -28,6 +28,7 @@ export default function Page() {
         fontSize: "1.5rem",
         textAlign: "center",
       }}
+      className="text-red-700 w-screen"
     >
       {message}
     </div>
