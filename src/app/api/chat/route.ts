@@ -14,7 +14,8 @@ Instructions:
 2. Stay on topic
 3. Be specific and practical
 4. Avoid unrelated tangents
-5. Always provide coherent responses`;
+5. Always provide coherent responses
+6. Answer in less than 140 words.`;
 
 export const runtime = 'edge';
 
