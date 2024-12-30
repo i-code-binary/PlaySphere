@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {  signOut } from "next-auth/react";
+import {  signOut, useSession } from "next-auth/react";
 import axios from "axios";
 import Link from "next/link";
 export enum Role {
   USER = "USER",
-  ADMIN = "ADMIN"
+  ADMIN = "ADMIN",
 }
 interface Payment {
   id: string;
@@ -28,31 +28,37 @@ export default function ProfilePage() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
+  const { data: session } = useSession(); // Using NextAuth's useSession hook
 
   useEffect(() => {
-    const checkSessionAndFetchData = async () => { 
-
-      const token = localStorage.getItem("token");
-
+    const checkSessionAndFetchData = async () => {
+      if (!session?.accessToken) {
+        // If there's no access token, redirect to authentication
+        router.push("/authentication");
+        return;
+      }
+    // console.log(session)
       try {
         const { data } = await axios.get("/api/user/profile", {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session.accessToken}`, // Use accessToken from session
           },
         });
         setUserData(data.user);
       } catch (error) {
         console.error("Error fetching user data:", error);
         if (axios.isAxiosError(error) && error.response?.status === 401) {
-          router.push("/authentication");
+          router.push("/authentication"); // Redirect on 401 errors
         }
       } finally {
         setLoading(false);
       }
     };
 
-    checkSessionAndFetchData();
-  }, [router]);
+    if (session) {
+      checkSessionAndFetchData(); // Only fetch data if the session exists
+    }
+  }, [router, session]);
 
   const handleLogout = async () => {
     setLoading(true);
@@ -154,27 +160,27 @@ export default function ProfilePage() {
         </button>
       </div>
       {userData.role === Role.ADMIN && (
-  <Link 
-    href="/all-payment"
-    className="mt-4 backdrop-blur-md bg-white/20 hover:bg-white/30 
+        <Link
+          href="/all-payment"
+          className="mt-4 backdrop-blur-md bg-white/20 hover:bg-white/30 
               text-white font-bold py-2 px-6 rounded-lg 
               transition-all duration-200 flex items-center gap-2"
-  >
-    <svg 
-      className="w-5 h-5" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2"
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    >
-      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-      <line x1="2" y1="10" x2="22" y2="10"/>
-    </svg>
-   Payment Dashboard
-  </Link>
-)}
+        >
+          <svg
+            className="w-5 h-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+          </svg>
+          Payment Dashboard
+        </Link>
+      )}
     </div>
   );
 }

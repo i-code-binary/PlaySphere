@@ -1,6 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "../../models/prismaClient";
-import  { DefaultSession, AuthOptions, Session } from "next-auth";
+import { DefaultSession, AuthOptions, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
@@ -9,6 +9,9 @@ type Role = "USER" | "ADMIN";
 
 declare module "next-auth" {
   interface Session {
+    accessToken?: string; // Add accessToken
+    accessTokenExpires?: number; // Optional: Include expiration
+    refreshToken?: string; // Optional: Include refreshToken
     user: {
       id: string;
       role: Role;
@@ -21,6 +24,9 @@ declare module "next-auth" {
   }
 
   interface JWT {
+    accessToken?: string;
+    accessTokenExpires?: number;
+    refreshToken?: string;
     role?: Role;
     id?: string;
   }
@@ -140,24 +146,39 @@ export const authOptions: AuthOptions = {
         return false;
       }
     },
-    async jwt({ token, user, account,/*profile */ }) {
+    async jwt({ token, user, account }) {
+      // Handle sign-in user data
+      if (account) {
+        token.accessToken = account.access_token as string; // Cast to string | undefined
+      }
       if (user) {
         token.role = user.role;
         token.id = user.id;
         token.email = user.email;
+        console.log("Token after user assignment:", token);
       }
 
-      // If it's a first time sign in via OAuth
+      // Handle first-time OAuth sign-in (e.g., Google)
       if (account?.provider === "google") {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: token.email! },
-          select: { role: true, id: true, email: true },
-        });
+        if (!token.email) {
+          console.error("OAuth token missing email for Google provider");
+          return token; // Return unmodified token if email is missing
+        }
 
-        if (dbUser) {
-          token.role = dbUser.role;
-          token.id = dbUser.id;
-          token.email = dbUser.email;
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email },
+            select: { role: true, id: true, email: true },
+          });
+
+          if (dbUser) {
+            token = { ...token, ...dbUser }; // Merge token with database user info
+            console.log("Token after database assignment:", token);
+          } else {
+            console.error(`No database user found for email: ${token.email}`);
+          }
+        } catch (error) {
+          console.error("Error querying database for user:", error);
         }
       }
 
@@ -172,6 +193,7 @@ export const authOptions: AuthOptions = {
           role: token.role as Role,
           email: token.email as string,
         },
+        accessToken: token.accessToken as string | undefined, // Ensure type alignment
       };
     },
   },
@@ -189,5 +211,3 @@ export const authOptions: AuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
-
-
