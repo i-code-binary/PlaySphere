@@ -8,7 +8,6 @@ import OurTestimonials from "../components/OurTestimonials";
 import ChatBot from "@/components/Chat";
 import Head from "next/head";
 import { useEffect } from "react";
-import { signOut } from "next-auth/react";
 
 export default function Home() {
   useEffect(() => {
@@ -26,9 +25,6 @@ export default function Home() {
       document.head.appendChild(meta);
     }
   }, []);
-  const handleLogout = () => {
-    signOut({ callbackUrl: "/" }); // Redirect to homepage after logout
-  };
   return (
     // <html lang="en">
     <div className="w-screen">
@@ -36,7 +32,6 @@ export default function Home() {
         <title>PlaySphere</title>
         <meta name="description" content="Play Sphere home page" />
       </Head>
-      <button onClick={handleLogout}>Logout</button>
       <Spotlight />
       <FrontPage />
       <FeaturedSports />
