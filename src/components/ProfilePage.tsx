@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSession, signOut } from "next-auth/react";
+import {  signOut } from "next-auth/react";
 import axios from "axios";
 import Link from "next/link";
 export enum Role {
@@ -30,13 +30,7 @@ export default function ProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
-    const checkSessionAndFetchData = async () => {
-      const session = await getSession();
-
-      if (!session?.user?.email) {
-        router.push("/authentication");
-        return;
-      }
+    const checkSessionAndFetchData = async () => { 
 
       const token = localStorage.getItem("token");
 
