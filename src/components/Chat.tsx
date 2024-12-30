@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import axios from "axios";
 
 interface Message {
   id: string;
@@ -13,6 +12,7 @@ export default function ChatBot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [expandedMessageId, setExpandedMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -39,13 +39,24 @@ export default function ChatBot() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("/api/chat", {
-        message: input.trim(),
+      const response = await fetch("/api/chat", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: input.trim(),
+        }),
       });
 
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
       const botMessage = {
         id: (Date.now() + 1).toString(),
-        content: response.data.message,
+        content: data.message,
         role: "assistant" as const,
         createdAt: new Date(),
       };
@@ -63,6 +74,10 @@ export default function ChatBot() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const toggleMessageExpansion = (messageId: string) => {
+    setExpandedMessageId(expandedMessageId === messageId ? null : messageId);
   };
 
   return (
@@ -124,13 +139,29 @@ export default function ChatBot() {
                 }`}
               >
                 <div
+                  onClick={() => 
+                    message.content.length > 150 && toggleMessageExpansion(message.id)
+                  }
                   className={`inline-block p-3 rounded-lg max-w-[80%] ${
                     message.role === "user"
                       ? "bg-blue-600 text-white"
                       : "bg-gray-200 text-gray-800"
+                  } ${
+                    message.content.length > 150 ? "cursor-pointer" : ""
                   }`}
                 >
-                  {message.content}
+                  {expandedMessageId === message.id || message.content.length <= 150 ? (
+                    <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                      {message.content}
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                        {message.content.slice(0, 150)}...
+                      </div>
+                      <span className="text-sm underline">Show more</span>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
