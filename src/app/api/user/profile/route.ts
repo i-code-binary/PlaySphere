@@ -11,7 +11,6 @@ export async function GET(req: NextRequest) {
   }
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    console.log(token)
     if (!token || !token?.email) {
       return NextResponse.json(
         {

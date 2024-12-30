@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {  signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import axios from "axios";
 import Link from "next/link";
 export enum Role {
@@ -32,18 +32,14 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const checkSessionAndFetchData = async () => {
-      if (!session?.accessToken) {
+      if (!session) {
         // If there's no access token, redirect to authentication
         router.push("/authentication");
         return;
       }
-    // console.log(session)
+      // console.log(session)
       try {
-        const { data } = await axios.get("/api/user/profile", {
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`, // Use accessToken from session
-          },
-        });
+        const { data } = await axios.get("/api/user/profile");
         setUserData(data.user);
       } catch (error) {
         console.error("Error fetching user data:", error);
