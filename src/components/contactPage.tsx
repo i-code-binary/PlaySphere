@@ -38,7 +38,7 @@ export default function ContactPage() {
         query: formData.query,
         name: formData.name,
       });
-      if (response.data.status != 201) {
+      if (response.status != 201) {
         setError(`${response.data.message}` || "Failed to raise query");
         setTimeout(() => {
           setError(null);
@@ -85,7 +85,7 @@ export default function ContactPage() {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black bg-white/10"
             required
           />
         </div>
@@ -99,7 +99,7 @@ export default function ContactPage() {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            className="w-full px-3 py-2 border border-gray-300 bg-white/10 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -112,7 +112,7 @@ export default function ContactPage() {
             name="query"
             value={formData.query}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            className="w-full px-3 py-2 border border-gray-300 bg-white/10 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
             rows={4}
             required
           ></textarea>
