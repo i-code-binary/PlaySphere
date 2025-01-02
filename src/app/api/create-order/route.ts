@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     // 3. Create order with detailed error logging
     Cashfree.XClientId = process.env.CASHFREE_API_KEY;
     Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
-    Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+    Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
     // 4. Create payment record in database
 
     const request = {
