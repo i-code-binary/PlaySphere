@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
     if (transaction.payment_status === "SUCCESS")
       StatusOfPayment = PAYMENTSTATUS.COMPLETED;
     else StatusOfPayment = PAYMENTSTATUS.PENDING;
+    const paymentId=transaction.cf_payment_id
     const payment = await prisma.payment.create({
       data: {
         userId,
@@ -98,7 +99,7 @@ export async function POST(req: NextRequest) {
         sports: existingOrder.sports,
         month: existingOrder.month,
         paypalOrderId: token,
-        paypalPayerId: userId,
+        paypalPayerId: paymentId,
         status: StatusOfPayment,
         paymentMethod: "Cashfree",
       },
