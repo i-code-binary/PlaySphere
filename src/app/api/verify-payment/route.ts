@@ -61,8 +61,23 @@ export async function POST(req: NextRequest) {
         status: 301,
         url: `/payment-cancel?error=User_id_Not_Found`,
       });
-
-    const paymentAmount = orderData.data?.[0]?.order_amount;
+    if (!orderData.data)
+      return NextResponse.json({
+        status: 301,
+        url: `/payment-cancel?error=Payment_Failed`,
+      });
+    // const paymentAmount = orderData.data?.[0]?.order_amount;
+    const transaction = orderData.data.find(
+      (transaction: any) =>
+        transaction.payment_status === "SUCCESS" ||
+        transaction.payment_status === "PENDING"
+    );
+    if (!transaction)
+      return NextResponse.json({
+        status: 301,
+        url: `/payment-cancel?error=Payment_Failed`,
+      });
+    const paymentAmount = transaction.payment_amount;
     if (!paymentAmount) {
       console.error("Invalid payment data:", orderData);
       return NextResponse.json({
@@ -70,7 +85,9 @@ export async function POST(req: NextRequest) {
         url: `/payment-cancel?error=invalid_payment_data`,
       });
     }
-
+    if (transaction.payment_status === "SUCCESS")
+      StatusOfPayment = PAYMENTSTATUS.COMPLETED;
+    else StatusOfPayment = PAYMENTSTATUS.PENDING;
     const payment = await prisma.payment.create({
       data: {
         userId,
@@ -93,7 +110,7 @@ export async function POST(req: NextRequest) {
     if (payment.status != PAYMENTSTATUS.COMPLETED)
       return NextResponse.json({
         status: 301,
-        url: `/payment-cancel?error=Payment_failed.`
+        url: `/payment-cancel?error=Payment_is_Pending.`,
       });
     return NextResponse.json({
       status: 201,
