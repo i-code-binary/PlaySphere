@@ -160,10 +160,10 @@ const PaymentForm: React.FC = () => {
           error.response?.data?.message ||
             "An error occurred while initiating payment"
         );
-        router.push(`/payment-verification`)
       } else {
         setError("An unexpected error occurred");
       }
+      router.push('/payment-verification')
     } finally {
       setLoading(false);
     }
