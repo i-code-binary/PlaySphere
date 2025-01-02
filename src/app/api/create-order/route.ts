@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
         customer_id: user.id,
         customer_name: user.name || "Guest",
         customer_email: user.email,
-        customer_phone: "6205633846",
+        customer_phone: "8797466094",
       },
       order_meta: {
         return_url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-verification`,
