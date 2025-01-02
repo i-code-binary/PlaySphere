@@ -4,6 +4,7 @@ import Head from "next/head";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { SessionProvider } from "next-auth/react";
+import Script from "next/script";
 
 // Load fonts
 const geistSans = localFont({
@@ -35,6 +36,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-screen overflow-x-hidden overflow-y-auto`}
       >
         <SessionProvider>
+          <Script
+            src="https://sdk.cashfree.com/js/v3/cashfree.js"
+            strategy="beforeInteractive"
+          />
           <Navbar />
           {children}
         </SessionProvider>

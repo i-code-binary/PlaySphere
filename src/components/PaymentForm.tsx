@@ -1,36 +1,19 @@
 "use client";
-import React, { useState } from "react";
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import React, { useEffect, useState } from "react";
 import { Input } from "./ui/Input";
 import { Label } from "./ui/Label";
 import axios from "axios";
 import sportsdata from "../data/sports_data.json";
+import { load } from "@cashfreepayments/cashfree-js";
+import { useRouter } from "next/navigation";
 
 interface FormData {
   amount: string;
-  currency: string;
   sports: string;
   month: string;
-}
-
-interface PayPalLink {
-  href: string;
-  rel: string;
-  method: string;
-}
-
-interface PayPalOrderResponse {
-  orderDetails: {
-    id: string;
-    links: PayPalLink[];
-  };
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-  };
-  message: string;
-  status: number;
 }
 
 const sportsOptions = [
@@ -55,19 +38,30 @@ const monthOptions = [
   "November",
   "December",
 ] as const;
-const currencies = ["USD"] as const;
+
 
 const PaymentForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     amount: "",
-    currency: "USD",
     sports: "",
     month: "",
   });
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
-
+  const router = useRouter();
+  useEffect(() => {
+    const initializeSDK = async () => {
+      try {
+        await load({ mode: "sandbox" });
+        console.log("Cashfree SDK loaded successfully");
+      } catch (error) {
+        console.log("Error connecting to Cashfree SDK", error);
+        setError("Failed to initialize payment gateway. Please refresh");
+      }
+    };
+    initializeSDK();
+  }, [router]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -96,6 +90,29 @@ const PaymentForm: React.FC = () => {
     }
   };
 
+  async function initiatePayment(paymentSessionId: string) {
+    try {
+      const cashfree = await load({ mode: "sandbox" });
+      const checkoutOptions = {
+        paymentSessionId: paymentSessionId,
+        redirectTarget: "_modal",
+      };
+      
+      const result: any = await cashfree.checkout(checkoutOptions);
+      if (result.error) {
+        setError(`${result.error}` || "Payment failed");
+        console.log(
+          "User has closed the popup or there is some payment error, Check for Payment Status"
+        );
+        console.log(result.error);
+        router.push("/payment-cancel?error=payment_failed");
+      }
+    } catch (error) {
+      console.log("Error initiating payment", error);
+      router.push("/payment-cancel?error=payment_initiation_failed");
+    }
+  }
+
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
@@ -104,47 +121,49 @@ const PaymentForm: React.FC = () => {
     setError(null);
     setStatus(null);
 
-    const { amount, currency, sports, month } = formData;
+    const { amount, sports, month } = formData;
 
     if (!amount || !sports || !month) {
       setError("Please fill all required fields.");
+      setLoading(false);
       return;
     }
 
     try {
-      const response = await axios.post<PayPalOrderResponse>(
-        "/api/user/verify",
-        {
-          amount,
-          currency,
-          sports,
-          month,
-        }
-      );
+      const response = await axios.post("/api/create-order", {
+        amount,
+        sports,
+        month,
+      });
 
-      if (response.data.orderDetails) {
-        const approvalLink = response.data.orderDetails.links.find(
-          (link) => link.rel === "approve"
-        )?.href;
-
-        if (approvalLink) {
-          window.location.href = approvalLink;
-        } else {
-          setError("PayPal approval link not found");
-        }
-      } else {
-        setError("Invalid response from server");
+      if (response.status !== 200) {
+        alert("Error creating payment order. Please try again.");
+        return;
       }
+      const paymentSessionId = response.data.sessionId;
+      const orderid = response.data.orderId;
+       localStorage.setItem("SESSION_ID", paymentSessionId);
+      localStorage.setItem("ORDER_ID", orderid);
+      if (!paymentSessionId || !orderid) {
+        setError("Failed to create Payment Order");
+        setLoading(false);
+        setTimeout(() => {
+          setError(null);
+        }, 2000);
+        return;
+      }
+      await initiatePayment(paymentSessionId);
+      router.push('/payment-verification')
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(
           error.response?.data?.message ||
             "An error occurred while initiating payment"
         );
+        router.push(`/payment-verification`)
       } else {
         setError("An unexpected error occurred");
       }
-      setTimeout(() => setError(null), 3000);
     } finally {
       setLoading(false);
     }
@@ -218,24 +237,6 @@ const PaymentForm: React.FC = () => {
           required
           disabled
         />
-      </div>
-
-      <div>
-        <Label htmlFor="currency">Currency</Label>
-        <select
-          id="currency"
-          name="currency"
-          value={formData.currency}
-          onChange={handleChange}
-          className="w-full bg-gray-50 dark:bg-zinc-800 text-black dark:text-white rounded-md px-3 py-2 text-sm"
-          disabled={isLoading}
-        >
-          {currencies.map((currency) => (
-            <option key={currency} value={currency}>
-              {currency}
-            </option>
-          ))}
-        </select>
       </div>
 
       <button

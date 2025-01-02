@@ -1,166 +1,109 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../models/prismaClient";
-import axios from "axios";
+import { Cashfree } from "cashfree-pg";
 
-// In your payment success API route (api/payment/success/route.ts)
-export async function GET(req: NextRequest) {
+enum PAYMENTSTATUS {
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+}
+export async function POST(req: NextRequest) {
   try {
-    // 1. Get PayPal token
-    const paypalToken = req.nextUrl.searchParams.get("token");
-    if (!paypalToken) {
-      return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-cancel?error=missing_token`
-      );
+    const body = await req.json();
+    const token = body.token;
+    if (!token) {
+      return NextResponse.json({
+        status: 301,
+        url: `/payment-cancel?error=missing_token`,
+      });
     }
-
-    // 4. Get PayPal order details first
-    let orderData = await getPayPalOrderDetails(paypalToken);
-    if (!orderData) {
-      return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-cancel?error=invalid_order`
-      );
-    }
-    if (orderData.status === "APPROVED") {
-      const captureData = await capturePayment(paypalToken);
-      if (!captureData) {
-        return NextResponse.redirect(
-          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-cancel?error=capture_failed`
-        );
-      }
-      // Use captureData instead of orderData for the rest of the process
-      orderData = captureData;
-    }
-
-    console.log(orderData);
     const existingOrder = await prisma.paymentId.findFirst({
-      where: { orderId: paypalToken },
+      where: { orderId: token },
     });
 
     if (!existingOrder)
-      return NextResponse.redirect("/payment-cancel?error=No_Order_id_Found");
-    // 5. Find user with either method
+      return NextResponse.json({
+        status: 301,
+        url: `/payment-cancel?error=No_Order_id_Found`,
+      });
+    const order_id = token;
 
+    const existingPayment = await prisma.payment.findFirst({
+      where: { paypalOrderId: token },
+    });
+    if (existingPayment)
+      return NextResponse.json({
+        status: 301,
+        url: `/payment-cancel?error=order_already_made`,
+      });
+    Cashfree.XClientId = process.env.CASHFREE_API_KEY;
+    Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
+    Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+    const orderData = await Cashfree.PGOrderFetchPayments(
+      "2023-08-01",
+      order_id
+    );
+    if (!orderData) {
+      return NextResponse.json({
+        status: 301,
+        url: `/payment-cancel?error=invalid_order`,
+      });
+    }
+    let StatusOfPayment: PAYMENTSTATUS = PAYMENTSTATUS.PENDING;
+    const paymentstatus = orderData.data?.[0]?.payment_status;
+    if (paymentstatus === "SUCCESS") StatusOfPayment = PAYMENTSTATUS.COMPLETED;
+    else if (paymentstatus === "CANCELLED" || paymentstatus === "FAILED")
+      StatusOfPayment = PAYMENTSTATUS.FAILED;
+    else StatusOfPayment = PAYMENTSTATUS.PENDING;
     const userId = existingOrder.userId;
     if (!userId)
-      return NextResponse.redirect("/payment-cancel?error=User_id_Not_Found");
+      return NextResponse.json({
+        status: 301,
+        url: `/payment-cancel?error=User_id_Not_Found`,
+      });
 
-    const paymentAmount =
-      orderData.purchase_units?.[0]?.payments?.captures?.[0]?.amount?.value ||
-      orderData.purchase_units?.[0]?.amount?.value;
-
-    const paymentCurrency =
-      orderData.purchase_units?.[0]?.payments?.captures?.[0]?.amount
-        ?.currency_code || orderData.purchase_units?.[0]?.amount?.currency_code;
-
-    if (!paymentAmount || !paymentCurrency) {
+    const paymentAmount = orderData.data?.[0]?.order_amount;
+    if (!paymentAmount) {
       console.error("Invalid payment data:", orderData);
-      return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-cancel?error=invalid_payment_data`
-      );
+      return NextResponse.json({
+        status: 301,
+        url: `/payment-cancel?error=invalid_payment_data`,
+      });
     }
 
     const payment = await prisma.payment.create({
       data: {
         userId,
-        amount: parseFloat(
-          orderData.purchase_units?.[0]?.payments?.captures?.[0]?.amount
-            ?.value || orderData.purchase_units?.[0]?.amount?.value
-        ),
-        currency:
-          orderData.purchase_units?.[0]?.payments?.captures?.[0]?.amount
-            ?.currency_code ||
-          orderData.purchase_units?.[0]?.amount?.currency_code,
+        amount: paymentAmount,
+        currency: "INR",
         sports: existingOrder.sports,
         month: existingOrder.month,
-        paypalOrderId: paypalToken,
-        paypalPayerId: orderData.payer.payer_id,
-        status: "COMPLETED",
-        paymentMethod: "PayPal",
+        paypalOrderId: token,
+        paypalPayerId: userId,
+        status: StatusOfPayment,
+        paymentMethod: "Cashfree",
       },
     });
     if (!payment) {
-      return NextResponse.json(
-        {
-          status: 500,
-          message: "Failed to create Payment. Please contact Official",
-        },
-        { status: 500 }
-      );
+      return NextResponse.json({
+        status: 301,
+        url: `/payment-cancel?error=Failed to create Payment. Please contact official. Your order id is ${token}. Please note this for future reference`,
+      });
     }
-    // 4. Clear cookies and redirect to success or failure page
-    const response = NextResponse.json(
-      {
-        status: 201,
-        message: `Payment successful for ${existingOrder.sports} for ${existingOrder.month}`,
-      },
-      { status: 201 }
-    );
-    response.cookies.delete("userEmail");
-
-    return response;
+    if (payment.status != PAYMENTSTATUS.COMPLETED)
+      return NextResponse.json({
+        status: 301,
+        url: `/payment-cancel?error=Payment_failed.`
+      });
+    return NextResponse.json({
+      status: 201,
+      url: `/payment-success?token=Payment Successful for ${existingOrder?.sports} for ${existingOrder?.month} with orderId ${token}`,
+    });
   } catch (error) {
     console.error("Payment verification error:", error);
-    return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-cancel?error=server_error`
-    );
-  }
-}
-
-// Helper functions
-
-async function getPayPalOrderDetails(token: string) {
-  try {
-    const auth = Buffer.from(
-      `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET_ID}`
-    ).toString("base64");
-
-    const response = await axios.get(
-      `${process.env.PAYPAL_REQUEST_URL}/${token}`,
-      {
-        headers: {
-          Authorization: `Basic ${auth}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (
-      response.data.status !== "APPROVED" &&
-      response.data.status !== "COMPLETED"
-    ) {
-      console.error("Invalid order status:", response.data.status);
-      return null;
-    }
-    return response.data;
-  } catch (error) {
-    console.error("PayPal API error:", error);
-    return null;
-  }
-}
-
-async function capturePayment(token: string) {
-  try {
-    const auth = Buffer.from(
-      `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET_ID}`
-    ).toString("base64");
-
-    const response = await axios.post(
-      `${process.env.PAYPAL_REQUEST_URL}/${token}/capture`,
-      {}, // Empty body as no additional data is needed
-      {
-        headers: {
-          Authorization: `Basic ${auth}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.error("PayPal capture error:", error);
-    if (axios.isAxiosError(error)) {
-      console.error("Capture failed with status:", error.response?.status);
-      console.error("Error details:", error.response?.data);
-    }
-    return null;
+    return NextResponse.json({
+      status: 301,
+      url: `/payment-cancel?error=server_error`,
+    });
   }
 }
