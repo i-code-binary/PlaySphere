@@ -4,7 +4,7 @@ Sports Club Management System. This website is made for sports club for manageme
 - Authentication (Google OAuth & Email/Password)
 - Role-based access (Admin/User) 
 - AI Fitness Chatbot
-- PayPal Payment Integration
+- CashFree Payment Integration
 - Admin Dashboard
 - User Management
 - Program Enrollment
@@ -16,7 +16,7 @@ Sports Club Management System. This website is made for sports club for manageme
 - Prisma
 - MongoDb
 - NextAuth.js
-- PayPal API
+- CashFree API
 - ReplicateAI API
 - Tailwind CSS
 
@@ -104,11 +104,10 @@ GOOGLE_CLIENT_ID=Google client id for Oauth
 GOOGLE_CLIENT_SECRET=Google client secret for OAuth
 NEXTAUTH_SECRET=Next auth secret
 NEXTAUTH_URL=http://localhost:3000
-PAYPAL_CLIENT_ID=Paypal client id
-PAYPAL_SECRET_ID=Paypal Secret id
 NEXT_PUBLIC_FRONTEND_URL= http://localhost:3000
-PAYPAL_REQUEST_URL=Request url where website will hit for order generation for payment
 REPLICATE_API_TOKEN=Chatbot key
+CASHFREE_API_KEY=CashFree client id for transaction
+CASHFREE_SECRET_KEY=Cashfree secret key for transaction
 ```
 ```bash
 npx prisma generate
