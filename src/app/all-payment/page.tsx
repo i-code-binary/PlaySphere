@@ -14,6 +14,7 @@ interface Payment {
   sports: string;
   month: string;
   paypalOrderId: string;
+  paypalPayerId: string;
   status: string;
   paymentMethod: string;
   createdAt: string;
@@ -70,8 +71,8 @@ export default function PaymentsPage() {
             <tr className="bg-gray-100 text-black">
               <th className="border border-gray-300 px-4 py-2">ID</th>
               <th className="border border-gray-300 px-4 py-2">User</th>
-              <th className="border border-gray-300 px-4 py-2">Amount</th>
-              <th className="border border-gray-300 px-4 py-2">Currency</th>
+              <th className="border border-gray-300 px-4 py-2">Amount(INR)</th>
+              <th className="border border-gray-300 px-4 py-2">Transaction ID</th>
               <th className="border border-gray-300 px-4 py-2">Sports</th>
               <th className="border border-gray-300 px-4 py-2">Month</th>
               <th className="border border-gray-300 px-4 py-2">
@@ -94,7 +95,7 @@ export default function PaymentsPage() {
                   {payment.amount.toFixed(2)}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {payment.currency}
+                  {payment.paypalPayerId}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {payment.sports}

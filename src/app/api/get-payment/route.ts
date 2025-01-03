@@ -28,6 +28,7 @@ export async function GET(req: NextRequest) {
         status: true,
         paymentMethod: true,
         createdAt: true,
+        paypalPayerId:true,
         user: {
           select: {
             name: true,

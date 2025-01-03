@@ -122,10 +122,10 @@ export default function ProfilePage() {
                   className="bg-gray-700 text-white p-2 rounded-md"
                 >
                   <p>
-                    <strong>ID:</strong> ${payment.id}
+                    <strong>ID:</strong> {payment.id}
                   </p>
                   <p>
-                    <strong>Amount:</strong> ${payment.amount}
+                    <strong>Amount:</strong> {payment.amount}
                   </p>
                   <p>
                     <strong>sports:</strong> {payment.sports}
