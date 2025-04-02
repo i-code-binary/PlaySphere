@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
         customer_id: user.id,
         customer_name: user.name || "Guest",
         customer_email: user.email,
-        customer_phone: "8797466094",
+        customer_phone: "6205633846",
       },
       order_meta: {
         return_url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-verification`,
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
       order_note: "Aditya: Hii are you enjoying our product!!",
     };
     const response = await Cashfree.PGCreateOrder("2023-08-01", request);
-    console.log("Response", response);
+    // console.log("Response", response);
     if (!response)
       return NextResponse.json(
         { status: 500, message: "Failed to create payment order" },
