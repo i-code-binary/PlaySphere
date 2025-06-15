@@ -156,26 +156,49 @@ export default function ProfilePage() {
         </button>
       </div>
       {userData.role === Role.ADMIN && (
-        <Link
-          href="/all-payment"
-          className="mt-4 backdrop-blur-md bg-white/20 hover:bg-white/30 
+        <div className="flex gap-3">
+          <Link
+            href="/all-payment"
+            className="mt-4 backdrop-blur-md bg-white/20 hover:bg-white/30 
               text-white font-bold py-2 px-6 rounded-lg 
               transition-all duration-200 flex items-center gap-2"
-        >
-          <svg
-            className="w-5 h-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
           >
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-            <line x1="2" y1="10" x2="22" y2="10" />
-          </svg>
-          Payment Dashboard
-        </Link>
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <line x1="2" y1="10" x2="22" y2="10" />
+            </svg>
+            Payment Dashboard
+          </Link>
+          <Link
+            href="/all-queries"
+            className="mt-4 backdrop-blur-md bg-white/20 hover:bg-white/30 
+    text-white font-bold py-2 px-6 rounded-lg 
+    transition-all duration-200 flex items-center gap-2"
+          >
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 1 1 5.83 1c0 1.5-1.5 2-2.5 2" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            Queries
+          </Link>
+        </div>
       )}
     </div>
   );

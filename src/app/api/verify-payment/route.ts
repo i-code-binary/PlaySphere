@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
     Cashfree.XClientId = process.env.CASHFREE_API_KEY;
     Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
     Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
+    // Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
     const orderData = await Cashfree.PGOrderFetchPayments(
       "2023-08-01",
       order_id
