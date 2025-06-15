@@ -12,3 +12,4 @@ declare module "@cashfreepayments/cashfree-js" {
 
   export { load };
 }
+
