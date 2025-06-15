@@ -12,7 +12,6 @@
   "dependencies": {
     "@cashfreepayments/cashfree-js": "^1.0.5",
     "@next-auth/prisma-adapter": "^1.0.7",
-    "@paypal/checkout-server-sdk": "^1.0.3",
     "@prisma/client": "^6.1.0",
     "@radix-ui/react-label": "^2.1.1",
     "@react-three/fiber": "^8.17.10",
@@ -32,7 +31,6 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.1.0",
     "react-toastify": "^11.0.2",
-    "replicate": "^1.0.1",
     "tailwind-merge": "^2.5.5",
     "three": "^0.171.0"
   },
