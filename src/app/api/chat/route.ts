@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server';
-import Replicate from 'replicate';
+import { NextRequest } from "next/server";
+import Groq from "groq-sdk";
 
-// Initialize Replicate client
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
+// Initialize Groq client
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });
 
 // Keep your system prompt
@@ -17,19 +17,15 @@ Instructions:
 5. Always provide coherent responses
 6. Answer in less than 100 words.`;
 
-export const runtime = 'edge';
-
-function buildPrompt(message: string): string {
-  return `${SYSTEM_PROMPT}\n\nUser: ${message}\nAssistant:`;
-}
+export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {
-    if (!process.env.REPLICATE_API_TOKEN) {
+    if (!process.env.GROQ_API_KEY) {
       return new Response(
         JSON.stringify({
-          error: 'REPLICATE_API_TOKEN is not configured',
-          details: 'API token is required but not set in environment variables',
+          error: "GROQ_API_KEY is not configured",
+          details: "API key is required but not set in environment variables",
         }),
         { status: 401 }
       );
@@ -37,51 +33,52 @@ export async function POST(req: NextRequest) {
 
     const { message } = await req.json();
 
-    if (!message || typeof message !== 'string') {
+    if (!message || typeof message !== "string") {
       return new Response(
-        JSON.stringify({ error: 'Message is required and must be a string' }),
+        JSON.stringify({ error: "Message is required and must be a string" }),
         { status: 400 }
       );
     }
 
-    const prompt = buildPrompt(message);
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: SYSTEM_PROMPT,
+        },
+        {
+          role: "user",
+          content: message,
+        },
+      ],
+      model: "llama3-8b-8192", // Fast and reliable model
+      max_tokens: 150,
+      temperature: 0.7,
+      top_p: 0.95,
+    });
 
-    const output = await replicate.run(
-      "meta/llama-2-7b-chat:13c3cdee13ee059ab779f0291d29054dab00a47dad8261375654de5540165fb0",
-      {
-        input: {
-          prompt,
-          max_new_tokens: 150,
-          temperature: 0.7,
-          top_p: 0.95,
-          repetition_penalty: 1.2,
-          system_prompt: SYSTEM_PROMPT
-        }
-      }
-    );
+    const responseMessage =
+      completion.choices[0]?.message?.content ||
+      "Sorry, I couldn't generate a response.";
 
     // Return the response
-    return new Response(
-      JSON.stringify({ message: output }),
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
+    return new Response(JSON.stringify({ message: responseMessage }), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   } catch (error) {
-    console.error('Error in chat endpoint:', error);
+    console.error("Error in chat endpoint:", error);
     return new Response(
       JSON.stringify({
-        error: 'Failed to process chat message',
-        details: error instanceof Error ? error.message : 'Unknown error',
+        error: "Failed to process chat message",
+        details: error instanceof Error ? error.message : "Unknown error",
       }),
-      { 
+      {
         status: 500,
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
   }
